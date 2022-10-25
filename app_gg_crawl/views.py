@@ -29,3 +29,16 @@ class GGSearchAPIView(APIView):
 			output = {'error':'Permission error'}
 
 		return Response(output, status=status.HTTP_200_OK)
+
+class Test(View):
+	def get(self, request):
+		key_list = ['seo là gì', 'seo tphcm']
+		config = {
+			"proxy_country":"VN",
+			"proxy_region":False,
+			"driver_device":"DESKTOP",
+			"driver_headless":True,
+			"num100":True
+		}
+		output = GG_SEARCH(key_list, config).output
+		return JsonResponse({'output':output})

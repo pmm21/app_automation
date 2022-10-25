@@ -21,3 +21,5 @@ urlpatterns = [
     path('selenium/', include('app_selenium.urls')),
     path('gg-crawl/', include('app_gg_crawl.urls')),
 ]
+
+admin.site.site_header = "Gasistant Automation"

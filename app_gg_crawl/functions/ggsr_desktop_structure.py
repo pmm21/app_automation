@@ -20,11 +20,11 @@ class GGSR():
 
   def get_feature_snipet_data(self, feature_snipet):
     output = dict(())
-    if feature_snipet:
+    if len(feature_snipet)>0:
       main_info = feature_snipet[0].xpath('.//div[@class="yuRUbf"]/a')[0]
       output['title'] = self.bts_get_text(main_info.xpath('.//h3')[0])
       output['link'] = main_info.xpath('./@href')[0]
-      if feature_snipet[0].xpath('.//table'):
+      if len(feature_snipet[0].xpath('.//table'))>0:
         output['type'] = 'TABLE'
       else:
         output['type'] = 'TEXT'
@@ -37,10 +37,10 @@ class GGSR():
           'price':self.bts_get_text(item.xpath('.//div[@class="T4OwTb"]')[0]),
           'link':item.xpath('.//a[@class="plantl pla-unit-title-link"]/@href')[0],
           'source':self.bts_get_text(item.xpath('.//div[@class="LbUacb"]')[0])
-      } for item in gg_shoping[0].xpath('.//div[@class="mnr-c pla-unit"]')] if gg_shoping else []
+      } for item in gg_shoping[0].xpath('.//div[@class="mnr-c pla-unit"]')] if len(gg_shoping)>0 else []
 
   def get_kg_table_data(self, kg_table):
-    if kg_table:
+    if len(kg_table)>0:
       return True
     else:
       return False
@@ -50,27 +50,19 @@ class GGSR():
         'item_type':'news_table',
         'data':[]
     }
-    if news_table:
-      for item in news_table.xpath('.//a[@class="WlydOe"]'):
-        output['data'].append({
-          'link':item.xpath('./@href')[0],
-          'source':self.bts_get_text(item.xpath('.//div[@class="CEMjEf NUnG9d"]')[0]),
-          'title':self.bts_get_text(item.xpath('.//div[@class="mCBkyc tNxQIb ynAwRc nDgy9d"]')[0])
-      })
+    for item in news_table.xpath('.//a[@class="WlydOe"]'):
+      output['data'].append({
+        'link':item.xpath('./@href')[0],
+        'source':self.bts_get_text(item.xpath('.//div[@class="CEMjEf NUnG9d"]')[0]),
+        'title':self.bts_get_text(item.xpath('.//div[@class="mCBkyc tNxQIb ynAwRc nDgy9d"]')[0])
+    })
     return output
   
   def get_video_table_data(self, video_table):
     output = {
         'item_type':'video_table',
-        'data':[]
+        'data':[url for url in video_table.xpath('.//a/@href')]
     }
-    if video_table:
-      for item in video_table.xpath('.//a[@class="X5OiLe"]'):
-        output['data'].append({
-          'link':item.xpath('./@href')[0],
-          'title':self.bts_get_text(item.xpath('.//span[@class="cHaqb"]')[0]),
-          'source':self.bts_get_text(item.xpath('.//span[@class="pcJO7e"]')[0])
-        })
     return output
 
   def get_map_table_data(self, map_table):
@@ -78,25 +70,24 @@ class GGSR():
         'item_type':'map_table',
         'data':[]
     }
-    if map_table:
-      for item in map_table.xpath('.//div[@jscontroller="AtSb"]'):
-        item_data = {
-            'name':self.bts_get_text(item.xpath('.//div[@class="dbg0pd"]')[0]),
-            'info':[self.bts_get_text(s_item) for s_item in item.xpath('.//div[@class="rllt__details"]/*')[1:]],
-        }
-        web_e = item.xpath('.//a[@class="yYlJEf Q7PwXb L48Cpd"]')
-        if web_e:
-          item_data['website'] = web_e[0].xpath('./@href')
-        else:
-          item_data['website'] = ''
-        output['data'].append(item_data)
+    for item in map_table.xpath('.//div[@jscontroller="AtSb"]'):
+      item_data = {
+          'name':self.bts_get_text(item.xpath('.//div[@class="dbg0pd"]')[0]),
+          'info':[self.bts_get_text(s_item) for s_item in item.xpath('.//div[@class="rllt__details"]/*')[1:]],
+      }
+      web_e = item.xpath('.//a[@class="yYlJEf Q7PwXb L48Cpd"]')
+      if len(web_e)>0:
+        item_data['website'] = web_e[0].xpath('./@href')
+      else:
+        item_data['website'] = ''
+      output['data'].append(item_data)
     return output
 
   def get_img_table_data(self, img_table):
     return {
         'item_type':'img_table',
         'data':[self.bts_get_text(item) for item in img_table.xpath('.//div[@class="xlY4q VDgVie VIZLse"]')]
-    } if img_table else dict(())
+    }
 
   def get_organic_result_info(self, organic_result):
     main_info = organic_result.xpath('.//div[contains(@class, "Z26q7c UK95Uc jGGQ5e")]/div/a')[0]
@@ -115,11 +106,11 @@ class GGSR():
       'imgs':False
     }
     review = organic_result.xpath('.//div[@class="fG8Fp uo4vr"]')
-    if review:
+    if len(review)>0:
       output['review/price'] = self.bts_get_text(review[0])
 
     faqs = organic_result.xpath('.//div[@class="Okagcf"]')
-    if faqs:
+    if len(faqs)>0:
       for item in faqs[0].xpath('.//g-accordion-expander[@jscontroller="Bnimbd"]'):
         item_data = item.xpath('./*')
         q = self.bts_get_text(item_data[0])
@@ -127,20 +118,20 @@ class GGSR():
         output['faqs'].append({'question':q, 'answer':a})
 
     events = organic_result.xpath('.//div[@class="P1usbc"]')
-    if events:
+    if len(events)>0:
       for item in events[0].xpath('.//div[@class="VNLkW"]'):
         time = self.bts_get_text(item.xpath('.//div[@class="i4vd5e"]')[0])
         e_name = self.bts_get_text(item.xpath('.//div[@class="G1Rrjc"]')[0])
         output['events'].append({'time':time, 'e_name':e_name})
     
     sitelinks = organic_result.xpath('.//div[@class="HiHjCd"]')
-    if sitelinks:
+    if len(sitelinks)>0:
       for item in sitelinks[0].xpath('.//a'):
         a = item.xpath('./@href')
         text = self.bts_get_text(item)
         output['sitelinks'].append({'a':a,'text':text})
     table = organic_result.xpath('.//div[@class="IThcWe"]')
-    if table:
+    if len(table)>0:
       for item in table[0].xpath('.//div[@class="YgpRwf"]'):
         output['table'].append([self.bts_get_text(s_item) for s_item in item.xpath('./*')])
 
@@ -162,7 +153,7 @@ class GGSR():
 
   def get_twitter_table_data(self, twitter_table):
     output = dict(())
-    if twitter_table:
+    if len(twitter_table)>0:
       info = twitter_table[0].xpath('.//div[@class="M42dy qkbjle"]')[0]
       output['title']= self.bts_get_text(info.xpath('.//h3')[0]),
       output['link']= info.xpath('.//a/@href')[0],

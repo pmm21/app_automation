@@ -11,8 +11,30 @@ from .ggsr_desktop_structure import GGSR
 
 from lxml import html
 from random import randint
+import random
 from datetime import datetime
 import time
+
+
+def get_key_data(key_object, main_html):
+	print('get_key_data: start')
+	tree = html.fromstring(main_html)
+	data = GGSR(tree)
+	output_data = data.output_data
+	print(output_data)
+	output_data['keyword'] = key_object
+	return output_data
+
+def get_key_data_100(key_object, main_html):
+	print('get_key_data: start')
+	tree = html.fromstring(main_html)
+	data = GGSR(tree)
+	output_data = {'keyword':key_object, 'data':[]}
+	for item in data.center_col:
+		if item['item_type']=='organic_result':
+			output_data['data'].append(item)
+	return output_data
+
 
 class GG_SEARCH():
 	def __init__(self,group_key, config):
@@ -22,6 +44,7 @@ class GG_SEARCH():
 		return 'https://www.google.com.'+country.lower().strip()
 
 	def run(self, group_key, output, config):
+		print(config['proxy_country'], config['proxy_region'])
 		proxy = get_proxy(country=config['proxy_country'], region=config['proxy_region'])
 		if proxy ==0:
 			output.append(0)
@@ -53,7 +76,7 @@ class GG_SEARCH():
 			if main_html==2: # proxy không giải đk captcha thử chạy chạy lại url search
 				print('Không giải được captcha')
 				driver = self.run_url(driver, gg_url)
-				time.sleep(randint(1,3))
+				time.sleep(random.uniform(1.1, 1.9))
 				main_html = self.request_key_data(key, proxy, driver)
 				if main_html==2: # Nếu vẫn k đk thì bỏ proxy, chạy lại bằng proxy mới
 					driver.quit()
@@ -61,12 +84,11 @@ class GG_SEARCH():
 					if output[-1] == 0:
 						return output
 			if config['num100']==True:
-				key_data = self.get_key_data_100(key, main_html)
+				key_data = get_key_data_100(key, main_html)
 			else:
-				key_data = self.get_key_data(key, main_html)
-			print(key_data)
+				key_data = get_key_data(key, main_html)
 			output.append(key_data)
-			time.sleep(randint(1,3))
+			time.sleep(random.uniform(1.1, 1.9))
 
 		driver.quit()
 		return output
@@ -95,6 +117,7 @@ class GG_SEARCH():
 		input_search = WebDriverWait(driver, 3).until(EC.visibility_of_element_located((By.XPATH, "//input[@name='q']")))
 		input_search.clear()
 		input_search.send_keys(key + Keys.ENTER)
+
 		print('request_key_data: step 2')
 		try:
 			main = WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.XPATH, "//div[@id='main']")))
@@ -115,24 +138,8 @@ class GG_SEARCH():
 					driver.quit()
 					return 2
 		print('request_key_data: step 3')
+		driver.implicitly_wait(random.uniform(0.5, 1.1))
 		main = WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.XPATH, "//div[@id='main']")))
 		main_html = main.get_attribute('innerHTML')
 		return main_html
 
-	def get_key_data(self, key_object, main_html):
-		print('get_key_data: start')
-		tree = html.fromstring(main_html)
-		data = GGSR(tree)
-		output_data = data.output_data
-		output_data['keyword'] = key_object
-		return output_data
-
-	def get_key_data_100(self, key_object, main_html):
-		print('get_key_data: start')
-		tree = html.fromstring(main_html)
-		data = GGSR(tree)
-		output_data = {'keyword':key_object, 'data':[]}
-		for item in data.center_col:
-			if item['item_type']=='organic_result':
-				output_data['data'].append(item)
-		return output_data
