@@ -148,7 +148,7 @@ class GGSR():
 
   def get_faq_table_data(self, FAQ_Table):
     if FAQ_Table:
-      return bts_get_text(FAQ_Table)
+      return self.bts_get_text(FAQ_Table)
     return ''
 
   def get_twitter_table_data(self, twitter_table):

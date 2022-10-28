@@ -120,23 +120,26 @@ class GG_SEARCH():
 
 		print('request_key_data: step 2')
 		try:
-			main = WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.XPATH, "//div[@id='main']")))
-		except:
+			captcha = WebDriverWait(driver, 3).until(EC.visibility_of_element_located((By.ID, "captcha-form")))
 			solve_status = CaptchaSolver(proxy,driver).solve_status
 			if solve_status == 0:
 				driver.quit()
 				return 2
+		except:
+			main = WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, "//div[@id='main']")))
 		if num_100==True:
 			time.sleep(randint(1,3))
 			url_100 = driver.current_url +'&num=100'
 			driver.get(url_100)
 			try:
-				main = WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.XPATH, "//div[@id='main']")))
-			except:
+				captcha = WebDriverWait(driver, 3).until(EC.visibility_of_element_located((By.ID, "captcha-form")))
 				solve_status = CaptchaSolver(proxy,driver).solve_status
 				if solve_status == 0:
 					driver.quit()
 					return 2
+			except:
+				main = WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, "//div[@id='main']")))
+				
 		print('request_key_data: step 3')
 		driver.implicitly_wait(random.uniform(0.5, 1.1))
 		main = WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.XPATH, "//div[@id='main']")))

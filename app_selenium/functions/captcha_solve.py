@@ -36,9 +36,12 @@ class GG_CAPTCHA_SOLVER:
             print('solving recaptcha')
             return self.RecaptchaSolver(driver, API_KEY=API_KEY)
         except: # normal captcha
-            captcha = driver.find_element(By.ID, 'captcha-form')
-            print('solving normal captcha')
-            return self.NormalCaptcha_solver(driver, API_KEY=API_KEY)
+            try:
+                captcha = driver.find_element(By.ID, 'captcha-form')
+                print('solving normal captcha')
+                return self.NormalCaptcha_solver(driver, API_KEY=API_KEY)
+            except:
+                return 0
 
     def RecaptchaSolver(self, driver, API_KEY):
         try:
