@@ -87,6 +87,7 @@ class GG_SEARCH():
 				key_data = get_key_data_100(key, main_html)
 			else:
 				key_data = get_key_data(key, main_html)
+			print(key_data)
 			output.append(key_data)
 			time.sleep(random.uniform(1.1, 1.9))
 
@@ -145,4 +146,3 @@ class GG_SEARCH():
 		main = WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.XPATH, "//div[@id='main']")))
 		main_html = main.get_attribute('innerHTML')
 		return main_html
-

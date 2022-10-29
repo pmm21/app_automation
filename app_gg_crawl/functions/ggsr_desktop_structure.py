@@ -6,7 +6,14 @@ from lxml import html
 class GGSR():
 
   def bts_get_text(self, tree_element):
-    return bts(html.tostring(tree_element), 'html.parser').getText().strip()
+    if type(tree_element)==list:
+      if len(tree_element)>0:
+        tree_element = tree_element[0]
+        return bts(html.tostring(tree_element), 'html.parser').getText().strip()
+      else:
+        return ''
+    else:
+      return bts(html.tostring(tree_element), 'html.parser').getText().strip()
 
   def get_top_nav_data(self, top_nav):
     return [self.bts_get_text(item) for item in top_nav[0].xpath('.//div[@class="hdtb-mitem"]')] if top_nav else []
@@ -21,9 +28,13 @@ class GGSR():
   def get_feature_snipet_data(self, feature_snipet):
     output = dict(())
     if len(feature_snipet)>0:
-      main_info = feature_snipet[0].xpath('.//div[@class="yuRUbf"]/a')[0]
-      output['title'] = self.bts_get_text(main_info.xpath('.//h3')[0])
-      output['link'] = main_info.xpath('./@href')[0]
+      output['title'] = self.bts_get_text(feature_snipet[0].xpath('.//h3'))
+      link = feature_snipet[0].xpath('.//a/@href')
+      if link:
+        output['link'] = link[0]
+      else:
+        output['link'] = ''
+
       if len(feature_snipet[0].xpath('.//table'))>0:
         output['type'] = 'TABLE'
       else:
@@ -33,10 +44,10 @@ class GGSR():
 
   def get_gg_shoping_data(self, gg_shoping):
     return [{
-          'title':self.bts_get_text(item.xpath('.//a[@class="plantl pla-unit-title-link"]')[0]),
-          'price':self.bts_get_text(item.xpath('.//div[@class="T4OwTb"]')[0]),
+          'title':self.bts_get_text(item.xpath('.//a[@class="plantl pla-unit-title-link"]')),
+          'price':self.bts_get_text(item.xpath('.//div[@class="T4OwTb"]')),
           'link':item.xpath('.//a[@class="plantl pla-unit-title-link"]/@href')[0],
-          'source':self.bts_get_text(item.xpath('.//div[@class="LbUacb"]')[0])
+          'source':self.bts_get_text(item.xpath('.//div[@class="LbUacb"]'))
       } for item in gg_shoping[0].xpath('.//div[@class="mnr-c pla-unit"]')] if len(gg_shoping)>0 else []
 
   def get_kg_table_data(self, kg_table):
@@ -53,8 +64,8 @@ class GGSR():
     for item in news_table.xpath('.//a[@class="WlydOe"]'):
       output['data'].append({
         'link':item.xpath('./@href')[0],
-        'source':self.bts_get_text(item.xpath('.//div[@class="CEMjEf NUnG9d"]')[0]),
-        'title':self.bts_get_text(item.xpath('.//div[@class="mCBkyc tNxQIb ynAwRc nDgy9d"]')[0])
+        'source':self.bts_get_text(item.xpath('.//div[@class="CEMjEf NUnG9d"]')),
+        'title':self.bts_get_text(item.xpath('.//div[@class="mCBkyc tNxQIb ynAwRc nDgy9d"]'))
     })
     return output
   
@@ -72,7 +83,7 @@ class GGSR():
     }
     for item in map_table.xpath('.//div[@jscontroller="AtSb"]'):
       item_data = {
-          'name':self.bts_get_text(item.xpath('.//div[@class="dbg0pd"]')[0]),
+          'name':self.bts_get_text(item.xpath('.//div[@class="dbg0pd"]')),
           'info':[self.bts_get_text(s_item) for s_item in item.xpath('.//div[@class="rllt__details"]/*')[1:]],
       }
       web_e = item.xpath('.//a[@class="yYlJEf Q7PwXb L48Cpd"]')
@@ -93,9 +104,9 @@ class GGSR():
     main_info = organic_result.xpath('.//div[contains(@class, "Z26q7c UK95Uc jGGQ5e")]/div/a')[0]
     output = {
       'item_type':'organic_result',
-      'title':self.bts_get_text(main_info.xpath('.//h3')[0]),
+      'title':self.bts_get_text(main_info.xpath('.//h3')),
       'link':main_info.xpath('./@href')[0],
-      'des':self.bts_get_text(organic_result.xpath('.//div[contains(@class,"VwiC3b yXK7lf MUxGbd yDYNvb lyLwlc")]')[0]),
+      'des':self.bts_get_text(organic_result.xpath('.//div[contains(@class,"VwiC3b yXK7lf MUxGbd yDYNvb lyLwlc")]')),
       'review/price':'',
       'faqs':[],
       'Pros_and_cons':[],
@@ -120,8 +131,8 @@ class GGSR():
     events = organic_result.xpath('.//div[@class="P1usbc"]')
     if len(events)>0:
       for item in events[0].xpath('.//div[@class="VNLkW"]'):
-        time = self.bts_get_text(item.xpath('.//div[@class="i4vd5e"]')[0])
-        e_name = self.bts_get_text(item.xpath('.//div[@class="G1Rrjc"]')[0])
+        time = self.bts_get_text(item.xpath('.//div[@class="i4vd5e"]'))
+        e_name = self.bts_get_text(item.xpath('.//div[@class="G1Rrjc"]'))
         output['events'].append({'time':time, 'e_name':e_name})
     
     sitelinks = organic_result.xpath('.//div[@class="HiHjCd"]')
@@ -209,8 +220,8 @@ class GGSR():
   def __init__(self, tree):
     self.top_nav = self.get_top_nav_data(tree.xpath('.//div[@id="hdtb-msb"]'))
     self.result_stats = self.get_result_stats_data(tree.xpath('.//div[@id="result-stats"]'))
-    self.gg_shoping = self.get_gg_shoping_data(tree.xpath('.//div[contains(@class, "cu-container")]'))
-    self.twitter_table = self.get_twitter_table_data(tree.xpath('.//div[@class="g eejeod"]'))
+    # self.gg_shoping = self.get_gg_shoping_data(tree.xpath('.//div[contains(@class, "cu-container")]'))
+    # self.twitter_table = self.get_twitter_table_data(tree.xpath('.//div[@class="g eejeod"]'))
     self.FAQ_Table = self.get_faq_table_data(tree.xpath('.//div[@class="AuVD cUnQKe"]'))
     self.feature_snipet = self.get_feature_snipet_data(tree.xpath('.//block-component'))
     self.kg_table = self.get_kg_table_data(tree.xpath('.//div[@class="liYKde g VjDLd"]'))
@@ -229,8 +240,8 @@ class GGSR():
     self.output_data = {
         'top_nav':self.top_nav,
         'result_stats':self.result_stats,
-        'gg_shoping': self.gg_shoping,
-        'twitter_table': self.twitter_table,
+        # 'gg_shoping': self.gg_shoping,
+        # 'twitter_table': self.twitter_table,
         'FAQ_Table': self.FAQ_Table,
         'feature_snipet': self.feature_snipet,
         'kg_table': self.kg_table,

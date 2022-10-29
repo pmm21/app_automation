@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_q',
     'app_selenium',
     'app_gg_crawl',
     'rest_framework'
@@ -148,3 +149,19 @@ STATIC_ROOT = 'static'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+Q_CLUSTER = {
+    'name': 'Test redis',
+    'workers': 8,
+    'recycle': 500,
+    'compress': True,
+    'save_limit': 250,
+    'queue_limit': 500,
+    'cpu_affinity': 1,
+    'label': 'Django Q',
+    'redis': {
+        'host': 'ec2-23-23-132-37.compute-1.amazonaws.com',
+        'port': 8939,
+        'password': 'pdd3cb11d851b17278926ffae835a2eaedecdb4e5f8d89ae79e79e41513940a0d',
+        'db': 0, }
+}
