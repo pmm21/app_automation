@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views import View
-from django_q.tasks import async_task
+from django_q.tasks import async_task, result, fetch
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -67,3 +67,36 @@ class Test(View):
 		}
 		output = GG_SEARCH(key_list, config).output
 		return JsonResponse({'output':output})
+
+
+
+import time
+from django_q.models import Task
+from .models import QClusterRunningTask
+def test_process(project_id, *args, **kwargs):
+	print('start process')
+	print(args)
+	print(kwargs)
+	time.sleep(2)
+	# all_task = Task.objects.all()
+	# for task in all_task:
+	# 	print(task.name, task.args, task.kwargs, type(task.args), type(task.kwargs))
+
+	print('done process')
+	return 'oke'
+
+def test_hook(task):
+	print('start hook')
+	# print('results', task.result)
+	print('done hook')
+
+class TestCallBack(View):
+	def get(self, request):
+		project_id = 123124
+		object_id = [1,23,123,31]
+		key1 = None
+		key2 = 'something'
+		task_id = async_task('app_gg_crawl.views.test_process', project_id,object_id,key1=key1,key2=key2, hook='app_gg_crawl.tests.test_hook')
+
+		QClusterRunningTask.task_create(task_id, '123', 'app_gg_crawl.views.test_process', project_id, object_id, key1=key1, key2=key2, hook='app_gg_crawl.tests.task_hook_delete')
+		return JsonResponse({'status':'oke'})

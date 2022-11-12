@@ -19,7 +19,10 @@ import time
 def get_key_data(key_object, main_html):
 	print('get_key_data: start')
 	tree = html.fromstring(main_html)
-	data = GGSR(tree)
+	try:
+		data = GGSR(tree)
+	except e:
+		print(e)
 	output_data = data.output_data
 	print(output_data)
 	output_data['keyword'] = key_object
