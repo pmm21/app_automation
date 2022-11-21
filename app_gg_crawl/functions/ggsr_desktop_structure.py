@@ -31,7 +31,7 @@ class GGSR():
       output['title'] = self.bts_get_text(feature_snipet[0].xpath('.//h3'))
       link = feature_snipet[0].xpath('.//a/@href')
       if link:
-        output['link'] = link[0]
+        output['link'] = link[0].split('#')[0]
       else:
         output['link'] = ''
 

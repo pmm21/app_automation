@@ -48,7 +48,7 @@ LOGGING = {
     },
 }
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -152,7 +152,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 Q_CLUSTER = {
     'name': 'Test redis',
-    'workers': 8,
+    'timeout':3500,
+    'retry': 3600,
+    'workers': 2,
     'recycle': 500,
     'compress': True,
     'save_limit': 250,

@@ -55,6 +55,28 @@ class GGSRStructure(APIView):
 		return Response(output, status=status.HTTP_200_OK)
 
 
+from .functions.gasistant_requests import gasistant_recheck_market
+class GKeySearchAPIView(APIView):
+	default_token = 'DsxfyqMzNcCQDrcY1B7WJFmYjBYadPRZJ5k81tCQA0NWCp1bfPSPhNTx5KwjEmHy'
+	def post(self, request):
+		data = request.data
+		try:
+			token = data['token']
+			config = data['config']
+			key_list = data['key_list']
+		except:
+			return Response({'error': 'error fields'}, status=status.HTTP_200_OK)
+
+		if token == self.default_token:
+			output = []
+			# gasistant_recheck_market(key_list, config)
+			async_task('app_gg_crawl.functions.gasistant_requests.gasistant_recheck_market', key_list, config)
+			output = {'status':'got your requests'}
+		else:
+			output = {'error':'Permission error'}
+
+		return Response(output, status=status.HTTP_200_OK)
+
 class Test(View):
 	def get(self, request):
 		key_list = ['seo là gì', 'seo tphcm']
@@ -77,7 +99,7 @@ def test_process(project_id, *args, **kwargs):
 	print('start process')
 	print(args)
 	print(kwargs)
-	time.sleep(2)
+	time.sleep(5)
 	# all_task = Task.objects.all()
 	# for task in all_task:
 	# 	print(task.name, task.args, task.kwargs, type(task.args), type(task.kwargs))
@@ -98,5 +120,5 @@ class TestCallBack(View):
 		key2 = 'something'
 		task_id = async_task('app_gg_crawl.views.test_process', project_id,object_id,key1=key1,key2=key2, hook='app_gg_crawl.tests.test_hook')
 
-		QClusterRunningTask.task_create(task_id, '123', 'app_gg_crawl.views.test_process', project_id, object_id, key1=key1, key2=key2, hook='app_gg_crawl.tests.task_hook_delete')
+		# QClusterRunningTask.task_create(task_id, '123', 'app_gg_crawl.views.test_process', project_id, object_id, key1=key1, key2=key2, hook='app_gg_crawl.tests.task_hook_delete')
 		return JsonResponse({'status':'oke'})

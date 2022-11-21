@@ -21,11 +21,12 @@ def get_key_data(key_object, main_html):
 	tree = html.fromstring(main_html)
 	try:
 		data = GGSR(tree)
+		output_data = data.output_data
+		print(output_data)
+		output_data['keyword'] = key_object
 	except e:
 		print(e)
-	output_data = data.output_data
-	print(output_data)
-	output_data['keyword'] = key_object
+	
 	return output_data
 
 def get_key_data_100(key_object, main_html):
@@ -41,6 +42,14 @@ def get_key_data_100(key_object, main_html):
 
 class GG_SEARCH():
 	def __init__(self,group_key, config):
+		'''
+			group_key (list): list of keyword (['seo Là gì', 'seo tphcm'])
+			config (dict): {
+				'country': 'VN',
+				'proxy_region': 'Hồ Chí Minh',
+				'driver_device': 'Desktop',
+			}
+		'''
 		self.output = self.run(group_key, [], config)
 
 	def google_domain(self, country='VN'):
@@ -59,15 +68,21 @@ class GG_SEARCH():
 		print('run: step 2')
 		driver = re_driver(proxy, user_agent = user_agent, headless=config['driver_headless'])
 		driver = self.run_url(driver, gg_url)
+
+		re_run_num = 0
 		while driver==0:
+			print('time', re_run_num)
 			proxy = get_proxy(country=config['proxy_country'], region=config['proxy_region'])
 			if proxy ==0:
 				output.append(0)
 				return output # Không tìm thấy proxy
-			print('run reget proxy:', proxy.ip, proxy.post)
+			print('run reget proxy:', proxy["ip"], proxy["port"])
 			driver = re_driver(proxy, user_agent = user_agent, headless=config['driver_headless'])
 			driver = self.run_url(driver, gg_url)
-
+			re_run_num = re_run_num+1
+			if re_run_num>=5:# Thử nhiều lần proxy không dùng dk
+				output.append(-1)
+				return output
 		print('run: step 3')
 		for i in range(len(group_key)):
 			key = group_key[i]
@@ -86,6 +101,7 @@ class GG_SEARCH():
 					output = run(group_key[i:],output,config)
 					if output[-1] == 0:
 						return output
+
 			if config['num100']==True:
 				key_data = get_key_data_100(key, main_html)
 			else:
