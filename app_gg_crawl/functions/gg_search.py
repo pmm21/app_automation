@@ -41,21 +41,21 @@ def get_key_data_100(key_object, main_html):
 
 
 class GG_SEARCH():
-	def __init__(self,group_key, config):
+	def __init__(self,keylist, config):
 		'''
-			group_key (list): list of keyword (['seo Là gì', 'seo tphcm'])
+			keylist (list): list of keyword (['seo Là gì', 'seo tphcm'])
 			config (dict): {
 				'country': 'VN',
 				'proxy_region': 'Hồ Chí Minh',
 				'driver_device': 'Desktop',
 			}
 		'''
-		self.output = self.run(group_key, [], config)
+		self.output = self.run(keylist, [], config)
 
 	def google_domain(self, country='VN'):
 		return 'https://www.google.com.'+country.lower().strip()
 
-	def run(self, group_key, output, config):
+	def run(self, keylist, output, config):
 		print(config['proxy_country'], config['proxy_region'])
 		proxy = get_proxy(country=config['proxy_country'], region=config['proxy_region'])
 		if proxy ==0:
@@ -84,8 +84,8 @@ class GG_SEARCH():
 				output.append(-1)
 				return output
 		print('run: step 3')
-		for i in range(len(group_key)):
-			key = group_key[i]
+		for i in range(len(keylist)):
+			key = keylist[i]
 			print(i, key)
 			if config['num100']==True and i==0:
 				main_html = self.request_key_data(key, proxy, driver, num_100=True)
@@ -98,7 +98,7 @@ class GG_SEARCH():
 				main_html = self.request_key_data(key, proxy, driver)
 				if main_html==2: # Nếu vẫn k đk thì bỏ proxy, chạy lại bằng proxy mới
 					driver.quit()
-					output = run(group_key[i:],output,config)
+					output = run(keylist[i:],output,config)
 					if output[-1] == 0:
 						return output
 

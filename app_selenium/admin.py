@@ -8,6 +8,6 @@ class proxyListAdmin(admin.ModelAdmin):
 	list_display_links = ('id','list_name')
 	def save_model(self, request, obj, form, change):
 		res = requests.get(obj.link_api)
-		obj.data = json.loads(res.text)
+		obj.proxies = json.loads(res.text)
 		super().save_model(request, obj, form, change)
 admin.site.register(proxyListModel, proxyListAdmin)

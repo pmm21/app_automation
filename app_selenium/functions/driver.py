@@ -7,8 +7,10 @@ from .background_js import background_js, manifest_json
 from pathlib import Path
 import os
 
-os_ = 'WIN' #MAC
-if os_ == 'WIN':
+import platform
+
+os_ = platform.system()
+if 'Windows' in os_:
   exe = '.exe'
 else:
   exe = ''
@@ -27,7 +29,10 @@ def firefox_driver(proxy=None, user_agent=None, headless = True):
     profile.update_preferences()
 
   options = Options()
-  options.headless = headless
+  if os_=="Linux":
+    options.headless = True
+  else:
+    options.headless = headless
   executable_path = BASE_DIR/f'geckodriver{exe}' 
   print(executable_path)
   driver = webdriver.Firefox(executable_path=executable_path, firefox_profile=profile, options=options)

@@ -10,7 +10,7 @@ from rest_framework import status
 # Create your views here.
 from .functions.gg_search import GG_SEARCH
 from .functions.ggsr_desktop_structure import GGSR
-
+from .functions.gasistant_requests import c_config
 
 class GGSearchAPIView(APIView):
 	default_token = 'DsxfyqMzNcCQDrcY1B7WJFmYjBYadPRZJ5k81tCQA0NWCp1bfPSPhNTx5KwjEmHy'
@@ -27,12 +27,14 @@ class GGSearchAPIView(APIView):
 			return Response({'error': 'error fields'}, status=status.HTTP_200_OK)
 
 		if token == self.default_token:
-			output = []
-			async_task('app_gg_crawl.functions.gg_search.GG_SEARCH', key_list, config)
-			output = {'status':'got your requests'}
+			if len(key_list)>6:
+				output = {'error':'Just crawl maximum 6 keys in 1 request'}
+			else:
+				output = []
+				config = c_config(config)
+				output = GG_SEARCH(key_list, config).output
 		else:
 			output = {'error':'Permission error'}
-
 		return Response(output, status=status.HTTP_200_OK)
 
 class GGSRStructure(APIView):
@@ -77,6 +79,7 @@ class GKeySearchAPIView(APIView):
 
 		return Response(output, status=status.HTTP_200_OK)
 
+from .functions.gasistant_requests import gasistant_recheck_market
 class Test(View):
 	def get(self, request):
 		key_list = ['seo là gì', 'seo tphcm']
@@ -84,11 +87,12 @@ class Test(View):
 			"proxy_country":"VN",
 			"proxy_region":False,
 			"driver_device":"DESKTOP",
-			"driver_headless":True,
+			"driver_headless":False,
 			"num100":True
 		}
-		output = GG_SEARCH(key_list, config).output
-		return JsonResponse({'output':output})
+		async_task('app_gg_crawl.functions.gasistant_requests.gasistant_recheck_market', key_list, config)
+		# output = gasistant_recheck_market(key_list, config)
+		return JsonResponse({'output':config})
 
 
 

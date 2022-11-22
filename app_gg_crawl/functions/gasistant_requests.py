@@ -1,5 +1,5 @@
 from .gg_search import GG_SEARCH
-import json
+import json, requests
 
 def c_config(config):
 	try:
@@ -27,15 +27,11 @@ def c_config(config):
 def gasistant_recheck_market(key_list, config):
 	config = c_config(config)
 	data = GG_SEARCH(key_list, config).output
-	for item in data:
-
+	
 	if data ==-1:
-		output = {
+		data = {
 			'error': 'Proxy error'
 		}
-	else:
-		output = list(())
-		for item in data:
 			
 	url = 'https://gasistant.com/project-manage/new-gg-search-result/'
 	data = data

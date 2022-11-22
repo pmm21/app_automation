@@ -3,6 +3,16 @@ from picklefield import PickledObjectField
 
 # Create your models here.
 
+class TestGGSearchModel(models.Model):
+	test_name = models.CharField(max_length=100)
+	key_list = models.TextField()
+	key_data = models.JSONField(null=True)
+
+	class Meta:
+		verbose_name = ("Test GG search")
+	def __str__(self):
+		return self.test_name
+
 class QClusterRunningTask(models.Model):
 	id = models.CharField(max_length=32, primary_key=True, editable=False)
 	func = models.CharField(max_length=256)
