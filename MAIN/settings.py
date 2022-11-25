@@ -152,18 +152,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 Q_CLUSTER = {
     'name': 'Test redis',
-    'timeout':3500,
-    'retry': 3600,
+    'timeout':295,
+    'retry': 300,
     'workers': 2,
     'recycle': 500,
     'compress': True,
     'save_limit': 250,
     'queue_limit': 500,
-    'cpu_affinity': 1,
+    'cpu_affinity': 2,
     'label': 'Django Q',
     'redis': {
-        'host': 'ec2-23-23-132-37.compute-1.amazonaws.com',
-        'port': 8939,
+        'host': 'ec2-34-233-115-62.compute-1.amazonaws.com',
+        'port': 32459,
         'password': 'pdd3cb11d851b17278926ffae835a2eaedecdb4e5f8d89ae79e79e41513940a0d',
         'db': 0, }
 }

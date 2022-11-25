@@ -1,10 +1,10 @@
 from django.contrib import admin
-from .models import QClusterRunningTask, TestGGSearchModel
+from .models import QClusterRunningTask, TestGGSearchModel, TestSaveData
 from .functions.gasistant_requests import gasistant_recheck_market
 from django_q.tasks import async_task, result, fetch
 # Register your models here.
 class QClusterRunningTaskAdmin(admin.ModelAdmin):
-	list_display = ('id','func', 'user_id', 'args','kwargs', 'hook', 'started')
+	list_display = ('id','func', 'args','kwargs', 'hook', 'started')
 admin.site.register(QClusterRunningTask, QClusterRunningTaskAdmin)
 
 class TestGGSearchAdmin(admin.ModelAdmin):
@@ -19,3 +19,4 @@ class TestGGSearchAdmin(admin.ModelAdmin):
 		super().save_model(request, obj, form, change)
 
 admin.site.register(TestGGSearchModel, TestGGSearchAdmin)
+admin.site.register(TestSaveData)

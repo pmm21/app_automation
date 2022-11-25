@@ -19,14 +19,12 @@ class QClusterRunningTask(models.Model):
 	hook = models.CharField(max_length=256, null=True)
 	args = PickledObjectField(null=True)
 	kwargs = PickledObjectField(null=True)
-	user_id = models.CharField(max_length=256)
 	started = models.DateTimeField(auto_now_add=True)
 
-	def task_create(task_id, user_id, func, *args, **kwargs):
+	def task_create(task_id, func, *args, **kwargs):
 		new_task = QClusterRunningTask(
 				id = task_id,
 				func = func,
-				user_id = user_id,
 				args = args
 			)
 		try: 
@@ -38,18 +36,12 @@ class QClusterRunningTask(models.Model):
 			new_task.kwargs = kwargs
 		new_task.save()
 
-def task_hook_delete(task):
-	print('start hook')
-	# r_tasks = QClusterRunningTask.objects.all()
-	# tasks = Task.objects.all()
-	# for item in r_tasks:
-	# 	print(item.id)
-	# 	if tasks.filter(id=item.id):
-	# 		try:
-	# 			item.delete()
-	# 		except:
-	# 			pass
-def test_hook(task):
-	print('start hook')
-	# print('results', task.result)
-	print('done hook')
+
+class TestSaveData(models.Model):
+	url = models.CharField(max_length=125)
+	data = models.JSONField()
+
+	class Meta:
+		verbose_name = ("Save Data")
+	def __str__(self):
+		return self.url
