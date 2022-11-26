@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.views import View
 from django_q.tasks import async_task, result, fetch
 from django_q.models import Task
-from .models import QClusterRunningTask
+from app_selenium.models import QClusterRunningTask
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -61,8 +61,13 @@ class GGSRStructure(APIView):
 from .functions.gasistant_requests import gasistant_recheck_market
 class GKeySearchAPIView(APIView):
 	default_token = 'DsxfyqMzNcCQDrcY1B7WJFmYjBYadPRZJ5k81tCQA0NWCp1bfPSPhNTx5KwjEmHy'
+	def get(self, request):
+		return Response({'status':'connect'}, status=status.HTTP_200_OK)
+
 	def post(self, request):
+
 		data = request.data
+
 		try:
 			token = data['token']
 			config = data['config']
@@ -72,10 +77,11 @@ class GKeySearchAPIView(APIView):
 
 		if token == self.default_token:
 			output = []
-			gasistant_recheck_market(key_list, config)
-			# func = "app_gg_crawl.functions.gasistant_requests.gasistant_recheck_market"
+			# gasistant_recheck_market(key_list, config)
+			func = "app_gg_crawl.functions.gasistant_requests.gasistant_recheck_market"
+
 			task_id = async_task(func, key_list, config)
-			QClusterRunningTask.task_create(task_id, func, key_list)
+			QClusterRunningTask.task_create(task_id, func, str(key_list))
 			output = {'status':'got your requests'}
 		else:
 			output = {'error':'Permission error'}
@@ -83,20 +89,25 @@ class GKeySearchAPIView(APIView):
 		return Response(output, status=status.HTTP_200_OK)
 
 from .functions.gasistant_requests import gasistant_recheck_market
+from .models import TestSaveData
+import requests
 class Test(View):
 	def get(self, request):
-		key_list = ['seo là gì', 'seo tphcm']
-		config = {
-			"proxy_country":"VN",
-			"proxy_region":False,
-			"driver_device":"DESKTOP",
-			"driver_headless":False,
-			"num100":True
-		}
-		async_task('app_gg_crawl.functions.gasistant_requests.gasistant_recheck_market', key_list, config)
+		# key_list = ['seo là gì', 'seo tphcm']
+		# config = {
+		# 	"proxy_country":"VN",
+		# 	"proxy_region":False,
+		# 	"driver_device":"DESKTOP",
+		# 	"driver_headless":False,
+		# 	"num100":True
+		# }
+		# async_task('app_gg_crawl.functions.gasistant_requests.gasistant_recheck_market', key_list, config)
+		test = TestSaveData.objects.get(pk=1)
+		url = 'https://gasistant.com/project-manage/new-gg-search-result/'
+		res = requests.post(url, json=test.data)
+		print(res)
 		# output = gasistant_recheck_market(key_list, config)
-		return JsonResponse({'output':config})
-
+		return JsonResponse({'output':'oke'})
 
 
 import time
