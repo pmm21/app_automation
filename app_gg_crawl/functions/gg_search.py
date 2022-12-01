@@ -102,11 +102,19 @@ class GG_SEARCH():
 						return output
 
 			if config['num100']==True:
-				key_data = get_key_data_100(key, main_html)
+				try:
+					key_data = get_key_data_100(key, main_html)
+				except:
+					driver.quit()
+					key_data = get_key_data_100(key, main_html)
 			else:
-				key_data = get_key_data(key, main_html)
+				try:
+					key_data = get_key_data(key, main_html)
+				except:
+					driver.quit()
+					key_data = get_key_data(key, main_html)
 			print(key_data)
-			output.append(key_data)
+			output.append(key_data) 
 			time.sleep(random.uniform(1.1, 1.9))
 
 		driver.quit()
@@ -164,3 +172,55 @@ class GG_SEARCH():
 		main = WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.XPATH, "//div[@id='main']")))
 		main_html = main.get_attribute('innerHTML')
 		return main_html
+
+def c_config(config):
+	try:
+		config['driver_device']
+	except:
+		config['driver_device'] = 'DESKTOP'
+	try:
+		config['driver_headless']
+	except:
+		config['driver_headless'] = False
+	try:
+		config['proxy_country']
+	except:
+		config['proxy_country'] = 'VN'
+	try:
+		config['proxy_region']
+	except:
+		config['proxy_region'] = None
+	try:
+		config['num100']
+	except:
+		config['num100'] = False
+	return config
+	
+def gg_search(key_list, config):
+	config = c_config(config)
+	data = GG_SEARCH(key_list, config).output
+	if data ==-1:
+		data = {
+			'error': 'Proxy error'
+		}
+	for sr in data:
+		rich_snipet = []
+		for item in sr['center_col']:
+			if item['item_type']=='organic_result':
+				if item['review/price']!='':
+					rich_snipet.append('review/price')
+				if item['faqs']:
+					rich_snipet.append('faqs')
+				if item['events']:
+					rich_snipet.append('events')
+				if item['sitelinks']:
+					rich_snipet.append('sitelinks')
+				if item['table']:
+					rich_snipet.append('table')
+				if item['img']:
+					rich_snipet.append('img')
+				if item['imgs']:
+					rich_snipet.append('imgs')
+		sr['rich_snipet'] = list(set(rich_snipet))
+		sr['config'] = config
+	return data

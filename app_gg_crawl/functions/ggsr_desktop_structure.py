@@ -28,18 +28,19 @@ class GGSR():
   def get_feature_snipet_data(self, feature_snipet):
     output = dict(())
     if len(feature_snipet)>0:
-      output['title'] = self.bts_get_text(feature_snipet[0].xpath('.//h3'))
-      link = feature_snipet[0].xpath('.//a/@href')
-      if link:
-        output['link'] = link[0].split('#')[0]
-      else:
-        output['link'] = ''
+      main_data = feature_snipet[0].xpath('.//div[@class="yuRUbf"]')
+      if main_data:
+        output['title'] = self.bts_get_text(main_data[0].xpath('.//h3'))
+        link = main_data[0].xpath('.//a/@href')
+        if link:
+          output['link'] = link[0].split('#')[0]
+        else:
+          output['link'] = ''
 
-      if len(feature_snipet[0].xpath('.//table'))>0:
-        output['type'] = 'TABLE'
-      else:
-        output['type'] = 'TEXT'
-      return output
+        if len(feature_snipet[0].xpath('.//table'))>0:
+          output['type'] = 'TABLE'
+        else:
+          output['type'] = 'TEXT'
     return output
 
   def get_gg_shoping_data(self, gg_shoping):

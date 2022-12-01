@@ -50,3 +50,8 @@ class QClusterRunningTask(models.Model):
 		# 	new_task.kwargs = kwargs
 		new_task.save()
 		return task_id
+
+class RequestsLogger(models.Model):
+	func = models.CharField(max_length=256)
+	args = PickledObjectField(null=True)
+	started = models.DateTimeField(auto_now_add=True)

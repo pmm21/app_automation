@@ -1,7 +1,5 @@
 from django.contrib import admin
 from .models import TestGGSearchModel, TestSaveData
-from .functions.gasistant_requests import gasistant_recheck_market
-from app_selenium.models import QClusterRunningTask
 from django_q.tasks import async_task, Task
 # Register your models here.
 
@@ -13,9 +11,8 @@ class TestGGSearchAdmin(admin.ModelAdmin):
 			'num100':False,
 			'driver_headless':False
 		}
-		func = "app_gg_crawl.functions.gasistant_requests.gasistant_recheck_market"
-		task_id = async_task(func,key_list, config)
-		QClusterRunningTask.task_create(task_id, func=func)
+		func = "app_gg_crawl.functions.gg_search.gg_search"
+		task_id = async_task(func, key_list, config)
 		super().save_model(request, obj, form, change)
 
 admin.site.register(TestGGSearchModel, TestGGSearchAdmin)
