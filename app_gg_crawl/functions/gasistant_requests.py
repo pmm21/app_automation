@@ -33,3 +33,14 @@ def gasistant_recheck_market(key_list, config):
 	url = 'https://gasistant.com/project-manage/new-gg-search-result/'
 	requests.post(url, json=data)
 	return data
+
+def gasistant_recheck_ranking(key_list, config):
+	config = c_config(config)
+	data = GG_SEARCH(key_list, config).output
+	if data ==-1:
+		data = {
+			'error': 'Proxy error'
+		}
+	url = 'https://gasistant.com/project-manage/new-keyword-ranking/'
+	requests.post(url, json=data)
+	return data

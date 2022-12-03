@@ -3,7 +3,6 @@ from django.http import JsonResponse
 from django.views import View
 from django_q.tasks import async_task, result, fetch
 from django_q.models import Task
-from app_selenium.models import QClusterRunningTask
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -47,7 +46,7 @@ class GGSearchAPIView(APIView):
 					else:
 						output = task[0].result
 				else:
-					time.sleep(15+len(key_list)*2.5)
+					time.sleep(20+len(key_list)*10)
 					while True:
 						task = Task.objects.filter(id=task_id)
 						if task:
@@ -100,12 +99,15 @@ class GKeySearchAPIView(APIView):
 			return Response({'error': 'error fields'}, status=status.HTTP_200_OK)
 
 		if token == self.default_token:
-			output = []
 			# gasistant_recheck_market(key_list, config)
-			func = "app_gg_crawl.functions.gasistant_requests.gasistant_recheck_market"
-
+			try:
+				if config['num100']==True:
+					func = "app_gg_crawl.functions.gasistant_requests.gasistant_recheck_ranking"
+				else:
+					func = "app_gg_crawl.functions.gasistant_requests.gasistant_recheck_market"
+			except:
+				func = "app_gg_crawl.functions.gasistant_requests.gasistant_recheck_market"
 			task_id = async_task(func, key_list, config)
-			QClusterRunningTask.task_create(task_id, func, str(key_list))
 			output = {'status':'got your requests'}
 		else:
 			output = {'error':'Permission error'}

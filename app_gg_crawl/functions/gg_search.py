@@ -90,11 +90,13 @@ class GG_SEARCH():
 				main_html = self.request_key_data(key, proxy, driver, num_100=True)
 			else:
 				main_html = self.request_key_data(key, proxy, driver)
-			if main_html==2: # proxy không giải đk captcha thử chạy chạy lại url search
+			if main_html==2: # Không giải đk captcha thử chạy lại url search
 				print('Không giải được captcha')
 				driver = self.run_url(driver, gg_url)
 				time.sleep(random.uniform(1.1, 1.9))
-				main_html = self.request_key_data(key, proxy, driver)
+
+				main_html = self.request_key_data(key, proxy, driver, num_100=config['num100'])
+
 				if main_html==2: # Nếu vẫn k đk thì bỏ proxy, chạy lại bằng proxy mới
 					driver.quit()
 					output = run(keylist[i:],output,config)
@@ -168,8 +170,10 @@ class GG_SEARCH():
 				main = WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, "//div[@id='main']")))
 				
 		print('request_key_data: step 3')
-		driver.implicitly_wait(random.uniform(0.5, 1.1))
+		WebDriverWait(driver, 3).until(EC.visibility_of_element_located((By.XPATH, "//div[@id='rso']")))
+		driver.implicitly_wait(random.uniform(1, 1.5))
 		main = WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.XPATH, "//div[@id='main']")))
+		
 		main_html = main.get_attribute('innerHTML')
 		return main_html
 
