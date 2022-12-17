@@ -16,14 +16,9 @@ def get_proxy(country=None, region=None): ### Mặc định tổng proxy =999
 			proxy_list.running_proxies['data'].append(get_proxy)
 
 			running_proxies = proxy_list.running_proxies['data']
-			if len(running_proxies)/(len(running_proxies)+len(proxies))>0.9:
-				keep = 50
-				running_proxies = running_proxies[len(running_proxies)-keep:]
-				back_proxies = running_proxies[:len(running_proxies)-keep]
-
-				proxy_list.running_proxies['data'] = running_proxies
-				proxy_list.proxies['data'].extend(back_proxies)
-
+			if len(proxy_list.proxies['data']):
+				proxy_list.proxies['data'].extend(proxy_list.running_proxies['data'])
+				proxy_list.running_proxies['data'] = []
 			proxy_list.save()
 			return get_proxy
 	return 0

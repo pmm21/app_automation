@@ -13,7 +13,7 @@ from lxml import html
 from random import randint
 import random
 from datetime import datetime
-import time
+import time, requests
 
 
 def get_key_data(key_object, main_html):
@@ -37,7 +37,6 @@ def get_key_data_100(key_object, main_html):
 		if item['item_type']=='organic_result':
 			output_data['data'].append(item)
 	return output_data
-
 
 class GG_SEARCH():
 	def __init__(self,keylist, config):
@@ -108,14 +107,15 @@ class GG_SEARCH():
 					key_data = get_key_data_100(key, main_html)
 				except:
 					driver.quit()
-					key_data = get_key_data_100(key, main_html)
+					get_key_data_100(key, main_html) # Chạy tiếp để nó trả lỗi về cho qcluster task
 			else:
 				try:
 					key_data = get_key_data(key, main_html)
 				except:
 					driver.quit()
-					key_data = get_key_data(key, main_html)
-			print(key_data)
+					get_key_data(key, main_html) # Chạy tiếp để nó trả lỗi về cho qcluster task
+
+			
 			output.append(key_data) 
 			time.sleep(random.uniform(1.1, 1.9))
 
@@ -150,12 +150,18 @@ class GG_SEARCH():
 		print('request_key_data: step 2')
 		try:
 			captcha = WebDriverWait(driver, 3).until(EC.visibility_of_element_located((By.ID, "captcha-form")))
+		except:
+			captcha = None
+		if captcha:
+			print('start solve captcha')
 			solve_status = CaptchaSolver(proxy,driver).solve_status
 			if solve_status == 0:
 				driver.quit()
 				return 2
-		except:
+		try:
 			main = WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, "//div[@id='main']")))
+		except:
+			return 2
 		if num_100==True:
 			time.sleep(randint(1,3))
 			url_100 = driver.current_url +'&num=100'
