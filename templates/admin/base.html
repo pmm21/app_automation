@@ -96,6 +96,7 @@
           {% block content_subtitle %}{% if subtitle %}<h2>{{ subtitle }}</h2>{% endif %}{% endblock %}
           {% block content %}
             {% block object-tools %}{% endblock %}
+            {% block cus_content%}{% endblock%}
             {{ content }}
           {% endblock %}
           {% block sidebar %}{% endblock %}

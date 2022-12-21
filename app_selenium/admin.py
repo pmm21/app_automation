@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import proxyListModel, QClusterRunningTask
+from .models import proxyListModel, QClusterRunningTask, CPUInfoViewActive
 import requests, json
 # Register your models here.
 from django_q.tasks import async_task, Task
@@ -17,3 +17,5 @@ class QClusterRunningTaskAdmin(admin.ModelAdmin):
 	list_display = ('id','func', 'args','kwargs', 'started')
 
 admin.site.register(QClusterRunningTask, QClusterRunningTaskAdmin)
+
+admin.site.register(CPUInfoViewActive)

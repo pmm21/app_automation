@@ -1,6 +1,6 @@
 from django.db import models
 from picklefield import PickledObjectField
-
+from django.conf import settings 
 # Create your models here.
 COUNTRIES = [('VN','Việt Nam'), ('USA','Hoa Kỳ')]
 class proxyListModel(models.Model):
@@ -55,3 +55,7 @@ class RequestsLogger(models.Model):
 	func = models.CharField(max_length=256)
 	args = PickledObjectField(null=True)
 	started = models.DateTimeField(auto_now_add=True)
+
+class CPUInfoViewActive(models.Model):
+	user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+	status = models.BooleanField(default=False)

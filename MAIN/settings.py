@@ -54,6 +54,7 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -96,7 +97,15 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'MAIN.wsgi.application'
-
+ASGI_APPLICATION = 'MAIN.asgi.application'
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -154,7 +163,7 @@ Q_CLUSTER = {
     'name': 'Test redis',
     'timeout':295,
     'retry': 300,
-    'workers': 4,
+    'workers': 8,
     'recycle': 500,
     'compress': True,
     'save_limit': 250,

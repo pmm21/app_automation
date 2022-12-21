@@ -133,9 +133,10 @@ class GKeySearchAPIView(APIView):
 		try:
 			token = data['token']
 			config = data['config']
-			key_list = data['key_list']
+			key_list = data['key_list'],
+			topic_id = data['topic_id']
 		except:
-			return Response({'error': 'error fields'}, status=status.HTTP_200_OK)
+			return Response({'error': 'error fields', 'data':data}, status=status.HTTP_200_OK)
 
 		if token == self.default_token:
 			# gasistant_recheck_market(key_list, config)
@@ -146,10 +147,10 @@ class GKeySearchAPIView(APIView):
 					func = "app_gg_crawl.functions.gasistant_requests.gasistant_recheck_market"
 			except:
 				func = "app_gg_crawl.functions.gasistant_requests.gasistant_recheck_market"
-			task_id = async_task(func, key_list, config)
+			task_id = async_task(func, key_list, config, topic_id)
 			output = {'status':'got your requests', 'task_id':task_id}
 		else:
-			output = {'error':'Permission error'}
+			output = {'error':'Permission error', 'data':data}
 
 		return Response(output, status=status.HTTP_200_OK)
 
@@ -166,6 +167,7 @@ class TestGGSearch(APIView):
 			token = data['token']
 			config = data['config']
 			key_list = data['key_list']
+			topic_id = data['topic_id']
 		except:
 			output = {
 				'error': 'error fields',
@@ -176,9 +178,9 @@ class TestGGSearch(APIView):
 		r_status=status.HTTP_200_OK
 		if token == self.default_token:
 			config = c_config(config)
-			output = GG_SEARCH(key_list, config).output
+			output = gasistant_recheck_market(key_list, config, topic_id, test_mod=True)
 		else:
-			output = {'error':'Permission error'}
+			output = {'error':'Permission error', 'data':data}
 			r_status=status.HTTP_403_FORBIDDEN
 
 		return Response(output, status=r_status)

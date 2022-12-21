@@ -1,0 +1,88 @@
+{% extends "admin/base.html" %}
+
+{% block cus_content%}
+
+<div id='cpu_info'>
+	<h1>CPU INFO</h1>
+	<div class = "all_block_info">
+		<div class='block_info'>
+			<div class="block_head">FireFox Num</div>
+			<div class="block_data" id="firefox_count">{{firefox_count}}</div>
+		</div>
+		<div class='block_info'>
+			<div class="block_head">CPU Percent</div>
+			<div class="block_data" id="cpu_percent">{{cpu_percent}}</div>
+		</div>
+		<div class='block_info'>
+			<div class="block_head">RAM Percent</div>
+			<div class="block_data" id="ram_percent">{{ram_percent}}</div>
+		</div>
+	</div>
+</div>
+{% endblock%}
+
+{% block footer %}
+<div id="footer">
+	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+	<script type="text/javascript">
+		const ws = new WebSocket('wss://'+window.location.host+ '/ws/selenium/cpu-info/');
+
+		ws.onopen = function(e) {
+			console.log(e)
+		};
+
+		ws.onmessage = function(e) {
+			const data = JSON.parse(e.data);
+			console.log(data)
+			document.getElementById('firefox_count').innerHTML = data.message.firefox_count
+			document.getElementById('cpu_percent').innerHTML = data.message.cpu_percent
+			document.getElementById('ram_percent').innerHTML = data.message.ram_percent
+		};
+		ws.onclose = function(e) {
+			console.error('Chat socket closed unexpectedly');
+
+		};
+
+	</script>
+<!-- 	<script type="text/javascript">
+		function get_cpu_data() {
+			$.ajax({
+				type: 'GET',
+					url: "/selenium/cpu-info-activate/",
+					data: {},
+					success: function (res) {
+					  	get_cpu_data()
+					},
+				})
+			}
+		get_cpu_data()
+	</script> -->
+</div>
+{% endblock %}
+{% block extrastyle %}
+	<style type="text/css">
+		.all_block_info{display: flex}
+
+		.block_info{
+			width: 200px;
+			height: 200px;
+			background: #264b5d;
+			padding: 10px;
+			margin: 10px;
+			border-radius: 30px;
+		}
+		.block_head{
+			margin: 0 0 20px;
+			font-weight: 300;
+			font-size: 1.25rem;
+			color: var(--body-quiet-color);
+			text-align: center;
+			padding: 20px;
+		}
+		.block_data {
+			font-size: 50px;
+			text-align: center;
+		}
+	</style>
+{% endblock %}
+

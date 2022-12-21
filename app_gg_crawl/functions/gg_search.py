@@ -64,7 +64,7 @@ class GG_SEARCH():
 
 		print(user_agent)
 		print('run: step 2')
-		driver = re_driver(proxy, user_agent = user_agent, headless=config['driver_headless'])
+		driver = re_driver(proxy, user_agent = user_agent)
 		driver = self.run_url(driver, gg_url)
 
 		re_run_num = 0
@@ -75,7 +75,7 @@ class GG_SEARCH():
 				output.append(0)
 				return output # Không tìm thấy proxy
 			print('run reget proxy:', proxy["ip"], proxy["port"])
-			driver = re_driver(proxy, user_agent = user_agent, headless=config['driver_headless'])
+			driver = re_driver(proxy, user_agent = user_agent)
 			driver = self.run_url(driver, gg_url)
 			re_run_num = re_run_num+1
 			if re_run_num>=5:# Thử nhiều lần proxy không dùng dk
@@ -188,10 +188,6 @@ def c_config(config):
 		config['driver_device']
 	except:
 		config['driver_device'] = 'DESKTOP'
-	try:
-		config['driver_headless']
-	except:
-		config['driver_headless'] = False
 	try:
 		config['proxy_country']
 	except:
